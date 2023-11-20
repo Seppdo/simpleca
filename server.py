@@ -1,3 +1,5 @@
+import hashlib
+
 from cryptography.hazmat.primitives import serialization
 from sanic import Sanic, text, HTTPResponse
 from cryptography import x509
@@ -47,12 +49,14 @@ async def csr_check(request) -> HTTPResponse:
 
 
 @app.get("/csr/sign")
-async def csr_sign(request):
+async def csr_sign(request) -> HTTPResponse:
     csr = request.cookies.get("csr")
     if csr is None:
         return text("No CSR")
     x509_csr = x509.load_pem_x509_csr(csr.encode('utf-8'))
-    return text(x509_csr.public_bytes(encoding=serialization.Encoding.PEM).decode('ASCII'))
+    response = text(x509_csr.public_bytes(encoding=serialization.Encoding.PEM).decode('ASCII'))
+    response.add_cookie('cert_file', hashlib.sha1(x509_csr.public_bytes(encoding=serialization.Encoding.PEM)).hexdigest())
+    return response
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000)
