@@ -202,7 +202,11 @@ def create_ca():
     with open(certs_dir.joinpath('server.chain.crt'), 'wb') as f:
         f.write(server_crt.public_bytes(serialization.Encoding.PEM))
         f.write(intermediate_crt.public_bytes(serialization.Encoding.PEM))
+
+    with open(certs_dir.joinpath('server.full-chain.crt'), 'wb') as f:
         f.write(server_crt.public_bytes(serialization.Encoding.PEM))
+        f.write(intermediate_crt.public_bytes(serialization.Encoding.PEM))
+        f.write(ca_crt.public_bytes(serialization.Encoding.PEM))
 
 
 if __name__ == "__main__":
