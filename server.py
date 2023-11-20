@@ -28,7 +28,14 @@ async def csr_check(request) -> HTTPResponse:
         return text("Invalid CSR")
 
     x509_csr = x509.load_pem_x509_csr(csr.body)
-    x509_csr_check = {'subject': x509_csr.subject.rfc4514_string(), 'csr': x509_csr.public_bytes(encoding=serialization.Encoding.PEM).decode('utf-8')}
+    x509_csr_check = {
+        'subject': x509_csr.subject.rfc4514_string(),
+        'csr': x509_csr.public_bytes(encoding=serialization.Encoding.PEM).decode('utf-8'),
+        'public_key': x509_csr.public_key().public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        ).decode('utf-8'),
+    }
     try:
         x509_csr_check['SAN'] = ' '.join(x509_csr.extensions.get_extension_for_class(x509.SubjectAlternativeName).value)
     except x509.ExtensionNotFound:
