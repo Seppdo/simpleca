@@ -12,8 +12,9 @@ app = Sanic("LaborCA")
 
 
 @app.get("/")
+@app.ext.template("index.html")
 async def index(request):
-    return text("Labor CA")
+    return {}
 
 
 @app.get("/csr/upload")
@@ -26,13 +27,16 @@ async def csr_upload(request):
 @app.ext.template("csr-check.html")
 async def csr_check(request) -> HTTPResponse:
     csr = request.files.get("csr")
+    print(csr.type)
 
     if csr is None:
         return text("No CSR")
-    if csr.type != 'application/pkcs10':
+
+    try:
+        x509_csr = x509.load_pem_x509_csr(csr.body)
+    except:
         return text("Invalid CSR")
 
-    x509_csr = x509.load_pem_x509_csr(csr.body)
     x509_csr_bytes = x509_csr.public_bytes(encoding=serialization.Encoding.PEM)
     x509_csr_check = {
         'subject': x509_csr.subject.rfc4514_string(),
@@ -43,14 +47,15 @@ async def csr_check(request) -> HTTPResponse:
         ).decode('utf-8'),
     }
     try:
-        x509_csr_check['SAN'] = ' '.join(x509_csr.extensions.get_extension_for_class(x509.SubjectAlternativeName).value)
+        x509_csr_check['SAN'] = ' '.join([f"{type(san).__name__}: {san.value}" for san in x509_csr.extensions.get_extension_for_class(x509.SubjectAlternativeName).value])
     except x509.ExtensionNotFound:
         x509_csr_check['SAN'] = 'No SAN'
 
     # save csr to file
     csr_path = Path('csr')
     csr_path.mkdir(parents=True, exist_ok=True)
-    csr_name = hashlib.sha1(x509_csr_bytes).hexdigest()
+    csr_name = x509_csr.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)[0].value
+    csr_name += '-' + hashlib.sha256(x509_csr_bytes).hexdigest()[:8]
 
     with csr_path.joinpath(csr_name + '.csr').open('wb') as f:
         f.write(x509_csr_bytes)
@@ -79,17 +84,19 @@ async def download(request):
     if process is None:
         return text("No process", status=404)
 
+    cert_dir = Path('certs')
+
     return {
-        'cert_file': process + '.crt',
-        'cert_chain_file': process + '.chain.crt',
-        'cert_full_chain_file': process + '.full-chain.crt'
+        'cert_file': cert_dir.joinpath(process + '.crt'),
+        'cert_chain_file': cert_dir.joinpath(process + '.chain.crt'),
+        'cert_full_chain_file': cert_dir.joinpath(process + '.full-chain.crt')
     }
 
 
-@app.get("/download/<filename>")
-async def download_file(request, filename):
+@app.get("/download/<filepath:path>")
+async def download_file(request, filepath):
     # check if file exists
-    file_obj = Path('certs').joinpath(filename)
+    file_obj = Path(filepath)
     if not file_obj.exists():
         return text("File not found", status=404)
 
@@ -97,4 +104,4 @@ async def download_file(request, filename):
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=80)

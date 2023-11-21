@@ -35,7 +35,8 @@ def sign(process: str) -> bool:
     certs_dir = Path('certs')
     certs_dir.mkdir(parents=True, exist_ok=True)
 
-    server_crt_builder = (x509.CertificateBuilder().subject_name(
+    server_crt_builder = x509.CertificateBuilder()
+    server_crt_builder = server_crt_builder.subject_name(
         x509_csr.subject
     ).issuer_name(
         intermediate_issuer
@@ -66,12 +67,13 @@ def sign(process: str) -> bool:
     ).add_extension(
         x509.AuthorityKeyIdentifier.from_issuer_public_key(intermediate_key.public_key()),
         critical=False
-    ))
+    )
 
     try:
-        server_crt_builder.add_extension(
+        print(x509_csr.extensions.get_extension_for_class(x509.SubjectAlternativeName).value)
+        server_crt_builder = server_crt_builder.add_extension(
             x509_csr.extensions.get_extension_for_class(x509.SubjectAlternativeName).value,
-            critical=True
+            critical=x509_csr.extensions.get_extension_for_class(x509.SubjectAlternativeName).critical
         )
     except x509.ExtensionNotFound:
         pass
