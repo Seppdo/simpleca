@@ -1,4 +1,4 @@
-#SimpleCA
+# SimpleCA
 An extremely simple CA web application for educational purposes. The web application allows you to upload and view a CSR and download a certificate generated from it. A chain of Root CA - Intermediate CA - Certificate is used.
 
 ## Usage
