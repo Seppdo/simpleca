@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+    <h2>Check Uploaded CSR</h2>
+    <h3>CSR</h3>
+    <pre>{{ csr.csr }}</pre>
+
+    <h3>Public Key</h3>
+    <pre>{{ csr.public_key }}</pre>
+
+    <h3>Subject</h3>
+    <pre>{{ csr.subject }}</pre>
+
+    <h3>SAN</h3>
+    <pre>{{ csr.SAN }}</pre>
+
+    <a href="sign">Sign CSR and Download Certificate</a>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block body %}
+    <h2>Download Certificate</h2>
+    <a href="download/{{ cert_file }}">Certificate</a><br>
+    <a href="download/{{ cert_chain_file }}">Chain</a><br>
+    <a href="download/{{ cert_full_chain_file }}">Full Chain</a><br>
+{% endblock %}

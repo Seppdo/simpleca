@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+    <h2>CSR Upload</h2>
+    <form action="check" method="post" enctype="multipart/form-data">
+        <label for="csr-file">CSR</label>
+        <input id="csr-file" name="csr" type="file" accept="application/pkcs10" required>
+        <br>
+        <input type="submit">
+    </form>
+{% endblock %}

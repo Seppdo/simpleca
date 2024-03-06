@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "simpleca"
+version = "0.1.0"
+description = ""
+authors = ["Sebastian Karius <sebastian.karius@gmx.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+cryptography = "^41.0.5"
+sanic-ext = "^23.6.0"
+jinja2 = "^3.1.2"
+sanic = "^23.6.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
