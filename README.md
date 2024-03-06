@@ -1,5 +1,5 @@
 # SimpleCA
-An extremely simple CA web application for educational purposes. The web application allows you to upload and view a CSR and download a certificate generated from it. A chain of Root CA - Intermediate CA - Certificate is used.
+An extremely simple CA web application for educational purposes. The web application allows you to upload and view a CSR and download a certificate generated from it. A chain of Root CA - Intermediate CA - Certificate is used. The generated certificate allows SAN and sets the IssuerName, BasicConstrains, KeyUsage and AuthorityKeyIdentifier fields to be accepted by modern browsers.
 
 ## Plain Python
 ### Requirements
