@@ -24,6 +24,11 @@ The server.py starts a web server built with the [Sanic](https://sanic.dev/en/) 
 ## Docker
 The Dockerfile creates an image that is immediately ready for use. The container started from the image provides a web server on port 80.
 
+A prebuild docker image is available on Dockerhub: <https://hub.docker.com/r/zepb/simpleca>
+```
+docker run -p 80:80 --name simpleca zepb/simpleca
+```
+
 ## Usage
 There are 4 options available on the website.
 * CSR Upload - Upload and view the CSR file
